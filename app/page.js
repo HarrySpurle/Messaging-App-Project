@@ -44,15 +44,15 @@ export default function Home() {
         </ul>
       </div>
 
-      <div style={{position: "fixed", bottom: "0", display: "flex", marginBottom: 10, colour: "#000" }}>
+      <div style={{position: "fixed", bottom: "0", display: "flex", marginBottom: 10, padding: "5px", borderRadius: "20px", backgroundColor: '#eee',colour: "#000" }}>
         <input
           placeholder="Type a message"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          style={{ flex: 1, padding: 8 }}
+          style={{ flex: 1, padding: 8, borderBlockColor: "#eee" }}
         />
-        <button onClick={sendMessage} style={{ padding: "8px 16px", marginLeft: 5 }}>Send</button>
+        <button onClick={sendMessage} style={{ padding: "8px 16px", marginLeft: 5, cursor: "pointer" }}>Send</button>
       </div>
 
     </div>
