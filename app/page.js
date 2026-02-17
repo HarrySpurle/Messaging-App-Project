@@ -28,16 +28,25 @@ export default function Home() {
   };
 
   return (
-    <div style={{ padding: "0px", margin: "0 auto",color: "#000", backgroundColor: "#ccc", minHeight: "100vh" }}>
+    <div style={{padding: "0px",
+                 margin: "0 auto",
+                 color: "#000",
+                 backgroundColor: "#ccc",
+                 minHeight: "100vh" }}>
 
       <input
         placeholder="Enter your name"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
-      />
+/>
 
-      <div style={{padding: 10, height: "100%", overflowY: "auto" }}>
-        <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+      <div style={{padding: 10,
+                   height: "100%",
+                   overflowY: "auto" }}>
+
+        <ul style={{listStyle: "none",
+                    padding: 0,
+                    margin: 0 }}>
           {messages.map((msg, i) => (
             <li key={i} style={{ marginBottom: 5}}>{msg}</li>
           ))}
