@@ -1,18 +1,43 @@
-const WebSocket = require('ws');
+const http = require("http");
+const fs = require("fs");
+const path = require("path");
+const WebSocket = require("ws");
 
-const server = new WebSocket.Server({ port: 8080 });
+// Create HTTP server to serve index.html
+const server = http.createServer((req, res) => {
+  const filePath = path.join(__dirname, "index.html");
 
-server.on('connection', socket => {
+  fs.readFile(filePath, (err, content) => {
+    if (err) {
+      res.writeHead(500);
+      res.end("Error loading file");
+      return;
+    }
+
+    res.writeHead(200, { "Content-Type": "text/html" });
+    res.end(content);
+  });
+});
+
+// Attach WebSocket server to HTTP server
+const wss = new WebSocket.Server({ server });
+
+wss.on("connection", (socket) => {
   console.log("User connected");
 
-  socket.on('message', message => {
-    console.log("Received:", message.toString());
-    socket.send("Message received by server");
+  socket.on("message", (message) => {
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(message.toString());
+      }
+    });
   });
 
-  socket.on('close', () => {
+  socket.on("close", () => {
     console.log("User disconnected");
   });
 });
 
-console.log("WebSocket server running on ws://localhost:8080");
+server.listen(8080, () => {
+  console.log("Server running at http://localhost:8080");
+});
