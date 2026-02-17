@@ -41,7 +41,7 @@ export default function Home() {
       message,
       date: new Date().toISOString(),
     };
-
+    
     socket.send(JSON.stringify(payload));
     setMessage("");
   };

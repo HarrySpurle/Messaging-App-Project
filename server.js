@@ -22,13 +22,28 @@ app.prepare().then(() => {
     console.log("Client connected");
 
     ws.on("message", (msg) => {
-      console.log("Received:", msg);
+      let messageObj;
+
+      try {
+        // Convert Buffer to string if needed
+        const jsonString = msg instanceof Buffer ? msg.toString("utf-8") : msg;
+        messageObj = JSON.parse(jsonString);
+      } catch (err) {
+        console.error("Failed to parse message:", err);
+        return;
+      }
+
+      console.log("Received:", messageObj);
+
+      // Broadcast JSON string to all clients
+      const broadcastData = JSON.stringify(messageObj);
       wss.clients.forEach((client) => {
-        if (client.readyState === WebSocket.OPEN) client.send(msg);
+        if (client.readyState === WebSocket.OPEN) client.send(broadcastData);
       });
     });
 
     ws.on("close", () => console.log("Client disconnected"));
+
     ws.on("error", (err) =>
       console.warn("WebSocket error (ignored in dev):", err.message)
     );
