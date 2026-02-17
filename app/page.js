@@ -28,7 +28,7 @@ export default function Home() {
   };
 
   return (
-    <div style={{ padding: "20px", margin: "0 auto",color: "#000", backgroundColor: "#fff", minHeight: "100vh" }}>
+    <div style={{ padding: "0px", margin: "0 auto",color: "#000", backgroundColor: "#ccc", minHeight: "100vh" }}>
 
       <input
         placeholder="Enter your name"
@@ -44,15 +44,35 @@ export default function Home() {
         </ul>
       </div>
 
-      <div style={{position: "fixed", bottom: "0", display: "flex", marginBottom: 10, padding: "5px", borderRadius: "20px", backgroundColor: '#eee',colour: "#000" }}>
+      <div style={{position: "fixed",
+                   bottom: "0", 
+                   width: "98%", 
+                   left: "50%", 
+                   transform: "translateX(-50%)", 
+                   display: "flex", 
+                   marginBottom: 15, 
+                   padding: 6, 
+                   borderRadius: 30, 
+                   backgroundColor: '#eee',
+                   color: "#000" 
+                  }}>
         <input
           placeholder="Type a message"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          style={{ flex: 1, padding: 8, borderBlockColor: "#eee" }}
-        />
-        <button onClick={sendMessage} style={{ padding: "8px 16px", marginLeft: 5, cursor: "pointer" }}>Send</button>
+          style={{flex: 1,
+                  padding: 8, 
+                  paddingLeft: 16,
+                  outline: "none"
+                  }}/>
+        <button onClick={sendMessage} style={{padding: "8px 16px",
+                                              marginLeft: 5,
+                                              cursor: "pointer",
+                                              backgroundColor: "#37997a",
+                                              color: "#eee",
+                                              borderRadius: 50
+                                              }}>Send</button>
       </div>
 
     </div>

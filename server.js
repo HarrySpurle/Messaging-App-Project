@@ -11,13 +11,12 @@ app.prepare().then(() => {
   const wss = new WebSocket.Server({ noServer: true, path: "/ws" });
 
   server.on("upgrade", (request, socket, head) => {
-    // Only accept upgrades to "/ws"
     if (request.url === "/ws") {
       wss.handleUpgrade(request, socket, head, (ws) => {
         wss.emit("connection", ws, request);
       });
     } else {
-      socket.destroy(); // Reject other upgrade requests
+      socket.destroy();
     }
   });
 
@@ -39,6 +38,6 @@ app.prepare().then(() => {
   });
 
   server.listen(3000, () => {
-    console.log("Next.js + WebSocket server running on http://localhost:3000");
+    console.log("Server running on http://localhost:3000");
   });
 });
