@@ -15,8 +15,6 @@ app.prepare().then(() => {
       wss.handleUpgrade(request, socket, head, (ws) => {
         wss.emit("connection", ws, request);
       });
-    } else {
-      socket.destroy();
     }
   });
 
@@ -24,10 +22,9 @@ app.prepare().then(() => {
     console.log("Client connected");
 
     ws.on("message", (msg) => {
-      console.log("Received:", msg.toString());
-      // Broadcast
+      console.log("Received:", msg);
       wss.clients.forEach((client) => {
-        if (client.readyState === WebSocket.OPEN) client.send(msg.toString());
+        if (client.readyState === WebSocket.OPEN) client.send(msg);
       });
     });
 
