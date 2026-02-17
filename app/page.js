@@ -28,7 +28,7 @@ export default function Home() {
   };
 
   return (
-    <div style={{ margin: "0 auto",color: "#000", backgroundColor: "#fff", minHeight: "100vh" }}>
+    <div style={{ padding: "20px", margin: "0 auto",color: "#000", backgroundColor: "#fff", minHeight: "100vh" }}>
 
       <input
         placeholder="Enter your name"
@@ -39,7 +39,7 @@ export default function Home() {
       <div style={{padding: 10, height: "100%", overflowY: "auto" }}>
         <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
           {messages.map((msg, i) => (
-            <li key={i} style={{ marginBottom: 5 }}>{msg}</li>
+            <li key={i} style={{ marginBottom: 5}}>{msg}</li>
           ))}
         </ul>
       </div>
