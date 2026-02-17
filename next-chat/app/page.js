@@ -28,8 +28,7 @@ export default function Home() {
   };
 
   return (
-    <div style={{ padding: 20, margin: "0 auto", backgroundColor: "#fff", minHeight: "100vh" }}>
-      <h1>WebSocket Chat</h1>
+    <div style={{ margin: "0 auto",color: "#000", backgroundColor: "#fff", minHeight: "100vh" }}>
 
       <input
         placeholder="Enter your name"
@@ -37,7 +36,15 @@ export default function Home() {
         onChange={(e) => setUsername(e.target.value)}
       />
 
-      <div style={{ display: "flex", marginBottom: 10 }}>
+      <div style={{padding: 10, height: "100%", overflowY: "auto" }}>
+        <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+          {messages.map((msg, i) => (
+            <li key={i} style={{ marginBottom: 5 }}>{msg}</li>
+          ))}
+        </ul>
+      </div>
+
+      <div style={{position: "fixed", bottom: "0", display: "flex", marginBottom: 10, colour: "#000" }}>
         <input
           placeholder="Type a message"
           value={message}
@@ -48,13 +55,6 @@ export default function Home() {
         <button onClick={sendMessage} style={{ padding: "8px 16px", marginLeft: 5 }}>Send</button>
       </div>
 
-      <div style={{ border: "1px solid #ccc", padding: 10, height: 300, overflowY: "auto", backgroundColor: "#f9f9f9" }}>
-        <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-          {messages.map((msg, i) => (
-            <li key={i} style={{ marginBottom: 5 }}>{msg}</li>
-          ))}
-        </ul>
-      </div>
     </div>
   );
 }
