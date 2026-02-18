@@ -5,7 +5,11 @@ Once loaded into your environment of choice, run 'npm install' followed by 'npm 
 ### Things to do:
 
 Encrypt messages (Arty)
+
 Unique User IDs ()
+
 Database ()
+
 Unique Chats ()
+
 User accounts ()
