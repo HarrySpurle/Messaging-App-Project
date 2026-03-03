@@ -17,7 +17,12 @@ export default function Home() {
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      setMessages((prev) => [...prev, data]);
+
+      if (data.type === "history") {
+        setMessages(data.messages);
+      } else {
+        setMessages((prev) => [...prev, data]);
+      }
     };
 
     ws.onerror = (err) =>
@@ -41,7 +46,7 @@ export default function Home() {
       message,
       date: new Date().toISOString(),
     };
-    
+
     socket.send(JSON.stringify(payload));
     setMessage("");
   };
