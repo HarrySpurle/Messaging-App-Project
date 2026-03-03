@@ -27,7 +27,6 @@ async function connectDB() {
     const db = client.db("chatapp");
     messagesCollection = db.collection("messages");
 
-    // Index for sorting messages by time
     await messagesCollection.createIndex({ createdAt: 1 });
 
     console.log("Connected to MongoDB");
