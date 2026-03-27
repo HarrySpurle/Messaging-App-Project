@@ -1,0 +1,3 @@
+MONGODB_URI=mongodb+srv://HarrySpurle:Harr1son@messagingapp.kpxvps4.mongodb.net/
+PORT=3000
+JWT_SECRET=your_super_secret_key
