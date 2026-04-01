@@ -18,8 +18,25 @@ def generate_keys(bits=512):
 
     return (e,n), (d, n) # public private
 
+
+
 def encrypt(plaintext, publicKey):
-    pass
+    e, n = publicKey
+    message_int = int.from_bytes(plaintext.encode(), 'big')
+    return pow(message_int, e, n)
 
 def decrypt(ciphertext, privateKey):
-    pass
+    d, n = privateKey
+    message_int = pow(ciphertext, d, n)
+    return message_int.to_bytes((message_int.bit_length() + 7) // 8, 'big').decode()
+
+
+# keys = generate_keys()
+
+# msg = "hello"
+# encrypted = encrypt(msg, keys[0])
+# print(encryptedmsg)
+
+# decrypted = decrypt(encryptedmsg, keys[1])
+# print(decrypted)
+
