@@ -17,6 +17,12 @@ export default function Home() {
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
+
+      if (data.type === "history") {
+        setMessages(data.messages);
+        return;
+      }
+
       setMessages((prev) => [...prev, data]);
     };
 
@@ -41,7 +47,7 @@ export default function Home() {
       message,
       date: new Date().toISOString(),
     };
-    
+
     socket.send(JSON.stringify(payload));
     setMessage("");
   };
@@ -75,10 +81,13 @@ export default function Home() {
         <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
           {messages.map((msg, i) => {
             const isMe = msg.username === username;
-            const formattedDate = new Date(msg.date).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          });
+
+            const formattedDate = msg.date
+              ? new Date(msg.date).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              : "";
 
             return (
               <li
@@ -103,7 +112,7 @@ export default function Home() {
                       fontSize: 13,
                       marginBottom: 4,
                       paddingRight: isMe ? 4 : 0,
-                      paddingLeft: isMe ? 0 : 4
+                      paddingLeft: isMe ? 0 : 4,
                     }}
                   >
                     {msg.username}
@@ -127,7 +136,7 @@ export default function Home() {
                       marginTop: 4,
                       opacity: 0.7,
                       paddingRight: isMe ? 4 : 0,
-                      paddingLeft: isMe ? 0 : 4
+                      paddingLeft: isMe ? 0 : 4,
                     }}
                   >
                     {formattedDate}
@@ -137,6 +146,7 @@ export default function Home() {
             );
           })}
         </ul>
+
         <div ref={messagesEndRef} />
       </div>
 
@@ -168,6 +178,7 @@ export default function Home() {
               background: "transparent",
             }}
           />
+
           <button
             onClick={sendMessage}
             style={{
