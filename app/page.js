@@ -1,16 +1,40 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [socket, setSocket] = useState(null);
   const [username, setUsername] = useState("");
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const messagesEndRef = useRef(null);
+  const router = useRouter();
 
+  // 🔐 Auth check
   useEffect(() => {
+    const savedUsername = localStorage.getItem("username");
+
+    if (!savedUsername) {
+      router.push("/login");
+    } else {
+      setUsername(savedUsername);
+      setLoading(false);
+    }
+  }, [router]);
+
+  // 🚪 Logout
+  const handleLogout = () => {
+    localStorage.removeItem("username");
+    router.push("/login");
+  };
+
+  // 🔌 WebSocket
+  useEffect(() => {
+    if (loading) return;
+
     const ws = new WebSocket("ws://localhost:3000/ws");
 
     ws.onopen = () => console.log("Connected to WebSocket server");
@@ -27,17 +51,19 @@ export default function Home() {
     };
 
     ws.onerror = (err) =>
-      console.error("WebSocket error (ignored in dev):", err.message);
+      console.error("WebSocket error:", err.message);
 
     setSocket(ws);
 
     return () => ws.close();
-  }, []);
+  }, [loading]);
 
+  // 📜 Auto scroll
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // 📩 Send message
   const sendMessage = () => {
     if (!socket || !username.trim() || !message.trim()) return;
 
@@ -52,6 +78,8 @@ export default function Home() {
     setMessage("");
   };
 
+  if (loading) return null;
+
   return (
     <div
       style={{
@@ -63,14 +91,42 @@ export default function Home() {
         flexDirection: "column",
       }}
     >
-      <div style={{ padding: 10 }}>
-        <input
-          placeholder="Enter your name"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
+      {/* 🔝 HEADER */}
+      <div
+        style={{
+          padding: 10,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          backgroundColor: "#ddd",
+          borderBottom: "1px solid #bbb",
+        }}
+      >
+        <div style={{ fontWeight: "bold" }}>
+          👤 {username}
+        </div>
+
+        <button
+          onClick={handleLogout}
+          style={{
+            backgroundColor: "#e74c3c",
+            color: "#fff",
+            border: "none",
+            padding: "8px 14px",
+            borderRadius: 20,
+            cursor: "pointer",
+            fontWeight: "bold",
+            fontSize: 13,
+            transition: "0.2s",
+          }}
+          onMouseOver={(e) => (e.currentTarget.style.opacity = 0.85)}
+          onMouseOut={(e) => (e.currentTarget.style.opacity = 1)}
+        >
+          Logout
+        </button>
       </div>
 
+      {/* 💬 MESSAGES */}
       <div
         style={{
           flex: 1,
@@ -111,8 +167,6 @@ export default function Home() {
                       fontWeight: "bold",
                       fontSize: 13,
                       marginBottom: 4,
-                      paddingRight: isMe ? 4 : 0,
-                      paddingLeft: isMe ? 0 : 4,
                     }}
                   >
                     {msg.username}
@@ -135,8 +189,6 @@ export default function Home() {
                       fontSize: 10,
                       marginTop: 4,
                       opacity: 0.7,
-                      paddingRight: isMe ? 4 : 0,
-                      paddingLeft: isMe ? 0 : 4,
                     }}
                   >
                     {formattedDate}
@@ -150,12 +202,8 @@ export default function Home() {
         <div ref={messagesEndRef} />
       </div>
 
-      <div
-        style={{
-          padding: 10,
-          backgroundColor: "#ccc",
-        }}
-      >
+      {/* ✍️ INPUT */}
+      <div style={{ padding: 10, backgroundColor: "#ccc" }}>
         <div
           style={{
             display: "flex",
