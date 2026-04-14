@@ -5,39 +5,34 @@ import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [socket, setSocket] = useState(null);
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState(null);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   const messagesEndRef = useRef(null);
   const router = useRouter();
 
-  // 🔐 Auth check
   useEffect(() => {
     const savedUsername = localStorage.getItem("username");
 
     if (!savedUsername) {
-      router.push("/login");
+      router.replace("/login");
     } else {
       setUsername(savedUsername);
-      setLoading(false);
     }
   }, [router]);
 
-  // 🚪 Logout
   const handleLogout = () => {
     localStorage.removeItem("username");
-    router.push("/login");
+    router.replace("/login");
   };
 
-  // 🔌 WebSocket
   useEffect(() => {
-    if (loading) return;
+    if (!username) return;
 
     const ws = new WebSocket("ws://localhost:3000/ws");
 
-    ws.onopen = () => console.log("Connected to WebSocket server");
+    ws.onopen = () => console.log("Connected to WebSocket");
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -56,16 +51,14 @@ export default function Home() {
     setSocket(ws);
 
     return () => ws.close();
-  }, [loading]);
+  }, [username]);
 
-  // 📜 Auto scroll
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // 📩 Send message
   const sendMessage = () => {
-    if (!socket || !username.trim() || !message.trim()) return;
+    if (!socket || !username || !message.trim()) return;
 
     const payload = {
       type: "chat_message",
@@ -78,7 +71,7 @@ export default function Home() {
     setMessage("");
   };
 
-  if (loading) return null;
+  if (username === null) return null;
 
   return (
     <div
@@ -91,7 +84,6 @@ export default function Home() {
         flexDirection: "column",
       }}
     >
-      {/* 🔝 HEADER */}
       <div
         style={{
           padding: 10,
@@ -117,16 +109,12 @@ export default function Home() {
             cursor: "pointer",
             fontWeight: "bold",
             fontSize: 13,
-            transition: "0.2s",
           }}
-          onMouseOver={(e) => (e.currentTarget.style.opacity = 0.85)}
-          onMouseOut={(e) => (e.currentTarget.style.opacity = 1)}
         >
           Logout
         </button>
       </div>
 
-      {/* 💬 MESSAGES */}
       <div
         style={{
           flex: 1,
@@ -202,7 +190,6 @@ export default function Home() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* ✍️ INPUT */}
       <div style={{ padding: 10, backgroundColor: "#ccc" }}>
         <div
           style={{
