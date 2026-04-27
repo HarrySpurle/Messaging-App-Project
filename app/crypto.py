@@ -1,4 +1,7 @@
 from sympy import randprime
+from argon2 import PasswordHasher
+
+ph = PasswordHasher()
 
 def RSA_generate_keys(bits: int =512):
     p = randprime(2**(bits-1), 2**bits)
@@ -30,3 +33,9 @@ def RSA_decrypt(ciphertext: int, privateKey: tuple):
     message_int = pow(ciphertext, d, n)
     return message_int.to_bytes((message_int.bit_length() + 7) // 8, 'big').decode()
 
+
+def pass_hash(password: str):
+    return ph.hash(password)
+
+def verify_pass(hashPassword: str, password: str):
+    return ph.verify(hashPassword, password)
