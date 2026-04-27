@@ -1,6 +1,6 @@
 from sympy import randprime
 
-def generate_keys(bits=512):
+def RSA_generate_keys(bits: int =512):
     p = randprime(2**(bits-1), 2**bits)
     q = randprime(2**(bits-1), 2**bits)
 
@@ -18,8 +18,15 @@ def generate_keys(bits=512):
 
     return (e,n), (d, n) # public private
 
-def encrypt(plaintext, publicKey):
-    pass
 
-def decrypt(ciphertext, privateKey):
-    pass
+
+def RSA_encrypt(plaintext: str, publicKey: tuple):
+    e, n = publicKey
+    message_int = int.from_bytes(plaintext.encode(), 'big')
+    return pow(message_int, e, n)
+
+def RSA_decrypt(ciphertext: int, privateKey: tuple):
+    d, n = privateKey
+    message_int = pow(ciphertext, d, n)
+    return message_int.to_bytes((message_int.bit_length() + 7) // 8, 'big').decode()
+
