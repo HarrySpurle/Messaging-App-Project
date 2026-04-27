@@ -2,14 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-// lets me write functions in python to run in js clientside
-import { loadPyodide } from "pyodide";
 
-const pyodide = await loadPyodide();
-await pyodide.runPythonAsync(`
-  from crypto import generate_keys, encrypt, decrypt
-`);
-//
 
 export default function Home() {
   const [socket, setSocket] = useState(null);
