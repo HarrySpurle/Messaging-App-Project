@@ -1,41 +1,64 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-
-
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [socket, setSocket] = useState(null);
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState(null);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
 
   const messagesEndRef = useRef(null);
+  const router = useRouter();
 
   useEffect(() => {
+    const savedUsername = localStorage.getItem("username");
+
+    if (!savedUsername) {
+      router.replace("/login");
+    } else {
+      setUsername(savedUsername);
+    }
+  }, [router]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("username");
+    router.replace("/login");
+  };
+
+  useEffect(() => {
+    if (!username) return;
+
     const ws = new WebSocket("ws://localhost:3000/ws");
 
-    ws.onopen = () => console.log("Connected to WebSocket server");
+    ws.onopen = () => console.log("Connected to WebSocket");
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
+
+      if (data.type === "history") {
+        setMessages(data.messages);
+        return;
+      }
+
       setMessages((prev) => [...prev, data]);
     };
 
     ws.onerror = (err) =>
-      console.error("WebSocket error (ignored in dev):", err.message);
+      console.error("WebSocket error:", err.message);
 
     setSocket(ws);
 
     return () => ws.close();
-  }, []);
+  }, [username]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const sendMessage = () => {
-    if (!socket || !username.trim() || !message.trim()) return;
+    if (!socket || !username || !message.trim()) return;
 
     const payload = {
       type: "chat_message",
@@ -43,10 +66,12 @@ export default function Home() {
       message,
       date: new Date().toISOString(),
     };
-    
+
     socket.send(JSON.stringify(payload));
     setMessage("");
   };
+
+  if (username === null) return null;
 
   return (
     <div
@@ -59,12 +84,35 @@ export default function Home() {
         flexDirection: "column",
       }}
     >
-      <div style={{ padding: 10 }}>
-        <input
-          placeholder="Enter your name"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
+      <div
+        style={{
+          padding: 10,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          backgroundColor: "#ddd",
+          borderBottom: "1px solid #bbb",
+        }}
+      >
+        <div style={{ fontWeight: "bold" }}>
+          👤 {username}
+        </div>
+
+        <button
+          onClick={handleLogout}
+          style={{
+            backgroundColor: "#e74c3c",
+            color: "#fff",
+            border: "none",
+            padding: "8px 14px",
+            borderRadius: 20,
+            cursor: "pointer",
+            fontWeight: "bold",
+            fontSize: 13,
+          }}
+        >
+          Logout
+        </button>
       </div>
 
       <div
@@ -77,10 +125,13 @@ export default function Home() {
         <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
           {messages.map((msg, i) => {
             const isMe = msg.username === username;
-            const formattedDate = new Date(msg.date).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          });
+
+            const formattedDate = msg.date
+              ? new Date(msg.date).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              : "";
 
             return (
               <li
@@ -104,8 +155,6 @@ export default function Home() {
                       fontWeight: "bold",
                       fontSize: 13,
                       marginBottom: 4,
-                      paddingRight: isMe ? 4 : 0,
-                      paddingLeft: isMe ? 0 : 4
                     }}
                   >
                     {msg.username}
@@ -128,8 +177,6 @@ export default function Home() {
                       fontSize: 10,
                       marginTop: 4,
                       opacity: 0.7,
-                      paddingRight: isMe ? 4 : 0,
-                      paddingLeft: isMe ? 0 : 4
                     }}
                   >
                     {formattedDate}
@@ -139,15 +186,11 @@ export default function Home() {
             );
           })}
         </ul>
+
         <div ref={messagesEndRef} />
       </div>
 
-      <div
-        style={{
-          padding: 10,
-          backgroundColor: "#ccc",
-        }}
-      >
+      <div style={{ padding: 10, backgroundColor: "#ccc" }}>
         <div
           style={{
             display: "flex",
@@ -170,6 +213,7 @@ export default function Home() {
               background: "transparent",
             }}
           />
+
           <button
             onClick={sendMessage}
             style={{
